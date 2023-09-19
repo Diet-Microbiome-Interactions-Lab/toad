@@ -1,20 +1,21 @@
 # Guide to the TOAD package
 
-## Classes:  
-**JScribe**: base class for implementing JDN/JSON serialization / deserialization  
+## Classes:
 
-**NUCLS**: NUCLeotide Sequence/String  (pronounced like "knuckles"). Technically, I can be any sequence of nucleotides OR amino acids.
-I am a 2-tuple of the form (signature, sequence), where *signature* is an instance of DASH, and *sequence* can be either a string or bytes.  
+**JScribe**: base class for implementing JDN/JSON serialization / deserialization
 
-- If sequence is bytes with the first byte being ASCII 'Z', then the sequence should be interpreted as gzsequence (GZIP compressed).  
+**Nucleotides**: Nucleotide Sequence/String. Technically, I can be any sequence of nucleotides OR amino acids.
+I am a 3-tuple of the form (signature, sequence, gzipped sequence), where _signature_ is an instance of DnaHash, and _sequence_ can be either a string or bytes.
 
-- If sequence is a string, it should be interpreted as the literal nucleotide sequence.  
+- If sequence is bytes with the first byte being ASCII 'Z', then the sequence should be interpreted as gzsequence (GZIP compressed).
 
-``` python
+- If sequence is a string, it should be interpreted as the literal nucleotide sequence.
 
-nucls = common.NUCLS("ATGCA")
+```python
+
+nucls = common.Nucleotides("ATGCA")
 >>> ATGCA
-nucls = common.NUCLS("aalksa", "ATGC", b'akx')
+nucls = common.Nucleotides("aalksa", "ATGC", b'akx')
 >>> "ATGC"
 print(nucls[0])
 >>> aalksa
@@ -25,52 +26,117 @@ print(nucls[2])
 
 ```
 
-**DASH**: DnA Hash  
-Example:  
+**DnaHash**: DnA Hash  
+Example:
 
-``` python
+```python
 
-myclass = common.DASH("ATGCAA")
+myclass = common.DnaHash("ATGCAA")
 >>> `9^)u3U)@}@tKA7Vr;0&  # Hashed DNA
 OR
-myclass = common.DASH(shakeup="ATGCCGGCTA")
+myclass = common.DnaHash(shakeup="ATGCCGGCTA")
 >>> `9^)u3U)@}@tKA7Vr;0&  # Hashed DNA
 
-# Using the function:  
+# Using the function:
 if isinstance(dna, str):
     dnas = str(dna)
     return base64.b85encode(hashlib.shake_128(dnas.encode('utf-8')).digest(16)).decode('utf-8')
 ```
 
-**DRuID**: Descrete RUn ID  
-Example:  
+**UniqueRunID**: Descrete RUn ID  
+Example:
 
-``` python
-mydruid = common.DRuID("seqrun1")
+```python
+myUniqueRunID = common.UniqueRunID("seqrun1")
 >>> seqrun1
 ```
 
-**GrIN**: Group Identitying Name  
-Example:  
+**GroupIdentifier**: Group Identitying Name  
+Example:
 
-``` python
-mygrin = common.GrIN("New group")
+```python
+myGroupIdentifier = common.GroupIdentifier("New group")
 >>> New group
 ```
 
-**Grove**: Abstract Base Class for a collection of DRuIDs. A collection of druids represents a discrete run ids.  
-Example:  
+**RunsCollection**: Abstract Base Class for a collection of UniqueRunIDs. A collection of UniqueRunIDs represents a discrete run ids.  
+Example:
 
-``` python
-grove2 = common.Grove(members=[druida, druidb], frozen=False)
-print(grove2.frozen)
-print(grove2.members)
->>> False  
+```python
+RunsCollection2 = common.RunsCollection(members=[UniqueRunIDa, UniqueRunIDb], frozen=False)
+print(RunsCollection2.frozen)
+print(RunsCollection2.members)
+>>> False
 >>> {('seqB',), ('seqA',)}
 ```
 
-**SqRL**: Sequence / Run + Labels (DD updates with "entry" as a domain term for the record level content in a fasta/fastq file)  
+**SequenceAndSignature**: Sequence / Run + Labels (DD updates with "entry" as a domain term for the record level content in a fasta/fastq file)  
+Example:
 
-**Group**: a named collection of SqRLs  
+```python
 
-**Roster**: a lightweight representation of a Group - contains the set of DRuIDs associated with a named Group.
+sqrl = common.SequenceAndSignature("Identifier1", Nucleotides)
+>>> (('Identifier1',), ('aalksa',), 'ATGC', ('???',))
+sqrl = common.SequenceAndSignature("Identifier1", Nucleotides, group="The A Team")
+>>> (('Identifier1',), ('aalksa',), 'ATGC', ('The A Team',))
+
+```
+
+This is in the form of:  
+(UniqueRunID(ID), sig, seq, GroupIdentifier(group))  
+Where sig == NUCL.signature (DnaHash) and seq == NUCL.sequence
+
+**SignatureAndGroup**: Inherits from **RunsCollection** & **JScribe**. Takes in sig, members, groups, and \*\*kwargs and inits (**init**) self.signature == DnaHash(sig) & self.group == GroupIdentifier(group).
+
+A SignatureAndGroup consists of a DNA signature and a Group, as represented by DnaHash(sig) and Group(GroupIdentifier).
+
+```python
+
+class SignatureAndGroup(RunsCollection, JScribe):
+    _TYPE = "TOAD.SignatureAndGroup"
+    def __init__(self, sig, members=None, group=None, **kwargs):
+            self.signature = DnaHash(sig)
+            self.group = GroupIdentifier('???') if (group is None) else GroupIdentifier(group)
+            RunsCollection.__init__(self, members, **kwargs)
+...  # The rest of the methods & properties are not yet supported
+
+```
+
+**Group**: A named collection of SequenceAndSignatures that inherits from the **JScribe** Class. This is a collections of runs and associated metadata  
+Example:
+
+```python
+nucls1 = common.Nucleotides("ATGC")
+nucls2 = common.Nucleotides("ATGC")
+nucls3 = common.Nucleotides("ATGC")
+
+sqrl1 = common.SequenceAndSignature("Identifier1", nucls1, group="The A Team")
+sqrl2 = common.SequenceAndSignature("Identifier2", nucls2, group="The A Team")
+sqrl3 = common.SequenceAndSignature("Identifier3", nucls3, group="The A Team")
+groups = common.Group(name="The A Team", sqrls=[sqrl1, sqrl2, sqrl3])
+
+print(groups._sqrls)
+>>> {('Identifier1',): (('Identifier1',), ('R*%10?aYYjRnEN)_(dH1',), 'ATGC', ('The A Team',)), ('Identifier2',): (('Identifier2',), ('R*%10?aYYjRnEN)_(dH1',), 'ATGC', ('The A Team',)), ('Identifier3',): (('Identifier3',), ('R*%10?aYYjRnEN)_(dH1',), 'ATGC', ('The A Team',))}
+```
+
+Note: All sqrl.group (i.e., group="The A Team") must be identice in order to be processed in the same group. This is validated in the **new** method.
+
+**RunsRoster**: a lightweight representation of a Group - contains the set of UniqueRunIDs associated with a named Group.
+Example:
+
+```python
+
+class RunsRoster(RunsCollection, JScribe):
+    _TYPE = "TOAD.RunsRoster"
+
+    def __init__(self, GroupIdentifier, members=None, **kwargs):
+        RunsCollection.__init__(self, members, **kwargs)
+        self.GroupIdentifier = GroupIdentifier(GroupIdentifier)
+
+```
+
+---
+
+---
+
+## Mongolia.py

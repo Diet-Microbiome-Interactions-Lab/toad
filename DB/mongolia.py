@@ -12,15 +12,15 @@ class CUD:
 
 class Qi:
 	#-- Query interface
-	def carriers(self, nucls, grpscontext = None):
+	def carriers(self, Nucleotides, grpscontext = None):
 		"""
-		I answer the groups that contain at least one instance of the given nucls.
+		I answer the groups that contain at least one instance of the given Nucleotides.
 		"""
 		raise NotImplementedError
 
-	def clutches(self, grpscontext = None):
+	def SignatureAndRunsWithMetadataes(self, grpscontext = None):
 		"""
-		I answer the set of clutches that are part of my collection.
+		I answer the set of SignatureAndRunsWithMetadataes that are part of my collection.
 		"""
 		raise NotImplementedError
 

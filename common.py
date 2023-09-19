@@ -12,22 +12,22 @@ import json
 
 """
 ## Notes on types and nomenclature
-NUCLS  - NUCLeotide Sequence/String
+Nucleotides  - NUCLeotide Sequence/String
 
-DASH   - DNA Hash
-GrIN   - Group Identifying Name
-DRuID  - Discrete Run ID - uniquely identifies a single run (i.e. entry in a FASTA/FASTQ file); the ID for a SqRL
+DnaHash   - DNA Hash
+GroupIdentifier   - Group Identifying Name
+UniqueRunID  - Discrete Run ID - uniquely identifies a single run (i.e. entry in a FASTA/FASTQ file); the ID for a SequenceAndSignature
 
-SqRL   - Sequence / Run + Labels (DD updates with "entry" as a domain term for the record level content in a fasta/fastq file)
+SequenceAndSignature   - Sequence / Run + Labels (DD updates with "entry" as a domain term for the record level content in a fasta/fastq file)
 
-Group  - a named collection of SqRLs
-Roster - a lightweight representation of a Group - contains the set of DRuIDs associated with a named Group
-Clutch - a collection of DRuIDs for whom the referant sequences all have the same signature.
+Group  - a named collection of SequenceAndSignatures
+RunsRoster - a lightweight representation of a Group - contains the set of UniqueRunIDs associated with a named Group
+SignatureAndGroup - a collection of UniqueRunIDs for whom the referant sequences all have the same signature.
 
-carrier - a group containing a given NUCLS (as determined by the signature of the NUCLS)
+carrier - a group containing a given Nucleotides (as determined by the signature of the Nucleotides)
 
-Grove  - abstract base class for collections of DRuIDs
-Scurry - abstract base class for collections of SqRLs (not yet implemented)
+RunsCollection  - abstract base class for collections of UniqueRunIDs
+Scurry - abstract base class for collections of SequenceAndSignatures (not yet implemented)
 
 ## Other notes...
 JDN - "Javascript Dictionary Normalized" - pronounced "JAY-DEN" is a python dictionary with values that are primitive enough to be directly serialized to JSON.
@@ -102,14 +102,14 @@ class JScribe:
         raise NotImplementedError("_fromJDN is subclass responsibility")
 
 
-class NUCLS(tuple):
+class Nucleotides(tuple):
     """
     NUCLeotide Sequence/String
     (pronounced like "knuckles")
     Technically, I can be any sequence of nucleotides OR amino acids.
     (See https://en.wikipedia.org/wiki/FASTA_format#Sequence_representation)
     I am a 2-tuple of the form (signature, sequence), where ...
-    * signature is an instance of DASH, and ...
+    * signature is an instance of DnaHash, and ...
     * sequence can be either a string or bytes.
 
     if sequence is bytes with the first byte being ASCII 'Z', then the sequence should be interpreted as gzsequence (GZIP compressed).
@@ -118,16 +118,15 @@ class NUCLS(tuple):
     def __new__(cls, *args):
         if len(args) == 1:
             seq = args[0]
-            print(f'Len of args is 1 and seq={seq}')
 
             if isinstance(seq, cls):
                 return seq
 
             if isinstance(seq, str):
-                return tuple.__new__(cls, (DASH(seq), seq, None))
+                return tuple.__new__(cls, (DnaHash(seq), seq, None))
 
         if len(args) == 2:
-            sig = asDASH(args[0])
+            sig = as_DnaHash(args[0])
             dna = args[1]
             if isinstance(dna, bytes):
                 if dna.startswith(b'Z'):
@@ -135,7 +134,7 @@ class NUCLS(tuple):
                     seq = None
                 else:
                     raise ValueError(
-                        "can't interpet NUCLS value ... is it a gzsequence?")
+                        "can't interpet Nucleotides value ... is it a gzsequence?")
             elif isinstance(dna, str):
                 seq = dna
                 zseq = None
@@ -143,7 +142,7 @@ class NUCLS(tuple):
             return tuple.__new__(cls, (sig, seq, zseq))
 
         if len(args) == 3:
-            sig = asDASH(args[0])
+            sig = as_DnaHash(args[0])
             seq = args[1]
             zseq = args[2]
 
@@ -152,6 +151,10 @@ class NUCLS(tuple):
         raise ValueError("Invalid NUCL processing.")
 
     signature = property(operator.itemgetter(0))
+
+    @staticmethod
+    def gzip_str(string_: str) -> bytes:
+        return gzip.compress
 
     @property
     def length(self):
@@ -180,15 +183,15 @@ class NUCLS(tuple):
         return self.sequence
 
 
-class DRuID(tuple):
+class UniqueRunID(tuple):
     """
     Discrete Run ID
     """
     def __new__(cls, obj):
-        if isinstance(obj, DRuID):
+        if isinstance(obj, UniqueRunID):
             return obj
 
-        if isinstance(obj, SqRL):
+        if isinstance(obj, SequenceAndSignature):
             return obj.ID
 
         if isinstance(obj, str):
@@ -202,12 +205,12 @@ class DRuID(tuple):
         return self[0]
 
 
-class GrIN(tuple):
+class GroupIdentifier(tuple):
     """
     Group Identifying Name
     """
     def __new__(cls, obj):
-        if isinstance(obj, GrIN):
+        if isinstance(obj, GroupIdentifier):
             return obj
         if isinstance(obj, str):
             return tuple.__new__(cls, (obj.strip(),))
@@ -225,24 +228,24 @@ class GrIN(tuple):
         raise NotImplementedError
 
 
-class DASH(tuple):
+class DnaHash(tuple):
     """
     Dna hASH
     """
     def __new__(cls, *args, **kwargs):
         if len(args) == 0:
             if 'shakeup' in kwargs:
-                print(f'Shakeup is in DASH, returning value')
                 return tuple.__new__(cls, (kwargs['shakeup'],))
 
         if len(args) == 1:
             arg = args[0]
             if isinstance(arg, str):
-                return tuple.__new__(cls, (DASH.shakeup(arg),))
+                return tuple.__new__(cls, (DnaHash.shakeup(arg),))
             if isinstance(arg, cls):
                 return arg
 
-        raise ValueError("Do not know how to instantiate DASH class with 2+ args")
+        raise ValueError(
+            "Do not know how to instantiate DnaHash class with 2+ args")
 
     @staticmethod
     def shakeup(dna):
@@ -258,16 +261,16 @@ class DASH(tuple):
         return self[0]
 
 
-def asDASH(sig):
+def as_DnaHash(sig):
     """
-    I answer a DASH instance using sig as a literal DASH value.
+    I answer a DnaHash instance using sig as a literal DnaHash value.
     """
-    return DASH(shakeup=sig)
+    return DnaHash(shakeup=sig)
 
 
-class Grove:
+class RunsCollection:
     """
-    I am an abstract base class for collection of DRuIDs.
+    I am an abstract base class for collection of UniqueRunIDs.
     I can be "frozen" in which I emulate immutability,
     or I can be "thawed" which allows for updates to my members.
     """
@@ -277,7 +280,7 @@ class Grove:
             self.frozen = kwargs.get('frozen', True)
             collect = frozenset if self.frozen else set
             print(members)
-            self.members = collect([DRuID(member) for member in members])
+            self.members = collect([UniqueRunID(member) for member in members])
         else:
             self.frozen = kwargs.get('frozen', False)
             self.members = set()
@@ -298,10 +301,10 @@ class Grove:
         return len(self.members)
 
     def __contains__(self, obj):
-        return (DRuID(obj) in self.members)
+        return (UniqueRunID(obj) in self.members)
 
     def add(self, member):
-        self.members.add(DRuID(member))
+        self.members.add(UniqueRunID(member))
 
     # def clone(self):
     #     """
@@ -310,44 +313,46 @@ class Grove:
     #     return self.__class__.fromJDN(self.toJDN())
 
 
-class Roster(Grove, JScribe):
-    _TYPE = "TOAD.Roster"
+class RunsRoster(RunsCollection, JScribe):
+    _TYPE = "TOAD.RunsRoster"
 
-    def __init__(self, grin, members=None, **kwargs):
-        Grove.__init__(self, members, **kwargs)
-        self.grin = GrIN(grin)
+    def __init__(self, GroupIdentifier, members=None, **kwargs):
+        RunsCollection.__init__(self, members, **kwargs)
+        self.GroupIdentifier = GroupIdentifier(GroupIdentifier)
 
     @property
     def RDN(self):
-        return str(self.grin)
+        return str(self.GroupIdentifier)
 
-    #----------------------------------------------
-    #-- Implement the needed methods from JScribe |
-    #----------------------------------------------
+    # ----------------------------------------------
+    # -- Implement the needed methods from JScribe |
+    # ----------------------------------------------
     def _toJDN(self, jdn):
-        jdn['grin'] = str(self.RDN)
+        jdn['GroupIdentifier'] = str(self.RDN)
         jdn['members'] = [str(member) for member in self]
         return jdn
 
     def _fromJDN(cls, jdn, **kwargs):
-        return cls(jdn['grin'], jdn['members'], frozen=kwargs.get('frozen', True))
+        return cls(jdn['GroupIdentifier'], jdn['members'], frozen=kwargs.get('frozen', True))
 
 
-class Clutch(Grove, JScribe):
-    _TYPE = "TOAD.Clutch"
+class SignatureAndGroup(RunsCollection, JScribe):
+    _TYPE = "TOAD.SignatureAndGroup"
 
     def __init__(self, sig, members=None, group=None, **kwargs):
-        self.signature = DASH(sig)
-        self.group = GrIN('???') if (group is None) else GrIN(group)
-        Grove.__init__(self, members, **kwargs)
+        self.signature = DnaHash(sig)
+        self.group = GroupIdentifier('???') if (
+            group is None) else GroupIdentifier(group)
+        RunsCollection.__init__(self, members, **kwargs)
 
     @property
     def RDN(self):
         return str(self.signature)
 
-    #----------------------------------------------
-    #-- Implement the needed methods from JScribe |
-    #----------------------------------------------
+    # ----------------------------------------------
+    # -- Implement the needed methods from JScribe |
+    # -- Below methods are not yet supported       |
+    # ----------------------------------------------
     def _toJDN(self, jdn):
         jdn['signature'] = self.RDN
         jdn['members'] = sorted([str(member) for member in self])
@@ -358,13 +363,13 @@ class Clutch(Grove, JScribe):
         return cls(jdn['signature'], jdn['members'])
 
 
-class SqRL(tuple):
+class SequenceAndSignature(tuple):
     "SeQuence + Run Labels"
     def __new__(cls, ID, s, **kwargs):
-        if isinstance(s, NUCLS):
+        if isinstance(s, Nucleotides):
             seq = s.sequence
             sig = s.signature
-        elif isinstance(s, DASH):
+        elif isinstance(s, DnaHash):
             seq = None
             sig = s
         else:
@@ -372,7 +377,7 @@ class SqRL(tuple):
 
         group = kwargs.get('group', '???')
 
-        return tuple.__new__(cls, (DRuID(ID), sig, seq, GrIN(group)))
+        return tuple.__new__(cls, (UniqueRunID(ID), sig, seq, GroupIdentifier(group)))
 
     ID = property(operator.itemgetter(0))
     signature = property(operator.itemgetter(1))
@@ -381,36 +386,36 @@ class SqRL(tuple):
 
     @property
     def CURIE(self):
-        return "[TOAD.SqRL:{}]".format(str(self.ID))
+        return "[TOAD.SequenceAndSignature:{}]".format(str(self.ID))
 
 
-class Group(JScribe):
+class RunsWithMetadata(JScribe):
     """
     I am a collection of runs and associated metadata.
     """
     _TYPE = 'TOAD.Group'
 
     def __init__(self, name, sqrls=None, **kwargs):
-        self.grin = GrIN(name)
+        self.GroupIdentifier = GroupIdentifier(name)
         self._sqrls = {}  # -- a map of {sqrl.ID -> sqrl, ...}
-        # -- a map of DASH (DNA hash / signature) to an instance of Clutch
-        self._clutches = {}
+        # -- a map of DnaHash (DNA hash / signature) to an instance of SignatureAndGroup
+        self._SignatureAndGroupes = {}
 
         if sqrls:
             self.extend(sqrls, **kwargs)
 
     @property
     def RDN(self):
-        return str(self.grin)
+        return str(self.GroupIdentifier)
 
     @property
-    def roster(self):
-        if getattr(self, '_cached_roster', None) is None:
-            self._cached_roster = Roster(self.grin, self)
-        return self._cached_roster
+    def RunsRoster(self):
+        if getattr(self, '_cached_RunsRoster', None) is None:
+            self._cached_RunsRoster = RunsRoster(self.GroupIdentifier, self)
+        return self._cached_RunsRoster
 
     def changed(self):
-        for cached in ['_cached_clutches', '_cached_run_IDs', '_cached_roster', '_cached_hand']:
+        for cached in ['_cached_SignatureAndGroupes', '_cached_run_IDs', '_cached_RunsRoster', '_cached_hand']:
             if hasattr(self, cached):
                 delattr(self, cached)
 
@@ -424,14 +429,14 @@ class Group(JScribe):
         return self._sqrls[k]
 
     def __contains__(self, k):
-        if isinstance(k, DRuID):
+        if isinstance(k, UniqueRunID):
             return (k in self._sqrls)
-        if isinstance(k, SqRL):
+        if isinstance(k, SequenceAndSignature):
             return (k.ID in self._sqrls)
-        if isinstance(k, DASH):
-            return (k in self.clutches)
-        if isinstance(k, NUCLs):
-            return (DASH(k) in self.clutches)
+        if isinstance(k, DnaHash):
+            return (k in self.SignatureAndGroupes)
+        if isinstance(k, Nucleotides):
+            return (DnaHash(k) in self.SignatureAndGroupes)
 
         raise KeyError(k)
 
@@ -442,7 +447,7 @@ class Group(JScribe):
 
     def hand(self):
         """
-        I answer the distinct set of NUCLS in my group as a tuple.
+        I answer the distinct set of Nucleotides in my group as a tuple.
         AKA unique-sequences
         """
         if getattr(self, '_cached_hand', None) is None:
@@ -450,56 +455,61 @@ class Group(JScribe):
             for sqrl in self:
                 if sqrl.sequence is not None:
                     if sqrl.signature not in hand:
-                        hand[sqrl.signature] = NUCLS(sqrl.sequence)
+                        hand[sqrl.signature] = Nucleotides(sqrl.sequence)
             self._cached_hand = tuple(hand.values())
         return self._cached_hand
 
     @property
-    def clutches(self):
-        if getattr(self, '_cached_clutches', None) is None:
-            self._cached_clutches = frozenset(self._clutches.keys())
-        return self._cached_clutches
+    def SignatureAndGroupes(self):
+        if getattr(self, '_cached_SignatureAndGroupes', None) is None:
+            self._cached_SignatureAndGroupes = frozenset(
+                self._SignatureAndGroupes.keys())
+        return self._cached_SignatureAndGroupes
 
-    def clutch(self, sig):
-        sig = DASH(sig)
-        if sig in self._clutches:
-            return Clutch(sig, self._clutches[sig].members, self.grin)
+    def SignatureAndRunsWithMetadata(self, sig):
+        sig = DnaHash(sig)
+        if sig in self._SignatureAndGroupes:
+            return SignatureAndRunsWithMetadata(sig, self._SignatureAndGroupes[sig].members, self.GroupIdentifier)
         else:
-            return Clutch(sig, [], self.grin)
+            return SignatureAndRunsWithMetadata(sig, [], self.GroupIdentifier)
 
     def extend(self, sqrls, **kwargs):
-        #---------------------------------------------------------
-        #-- Do some validation on the runs that we're given.     |
-        #-- Runs without an ID are invalid.                      |
-        #-- Runs with embedded group names must match this group |
-        #---------------------------------------------------------
+        # ---------------------------------------------------------
+        # -- Do some validation on the runs that we're given.     |
+        # -- Runs without an ID are invalid.                      |
+        # -- Runs with embedded group names must match this group |
+        # ---------------------------------------------------------
         if not all([(sqrl.ID is not None) for sqrl in sqrls]):
             raise Exception("cannot add an anonymous run to a group")
 
         if kwargs.get('cross_check', True):
-            if not all([(sqrl.group == self.grin) for sqrl in sqrls]):
+            print(f'Cross_Check is true...')
+            print(f'Self.GroupIdentifier == {self.GroupIdentifier}')
+            if not all([(sqrl.group == self.GroupIdentifier) for sqrl in sqrls]):
                 raise Exception("group <- -> run cross check failed")
 
-        #------------------------------------------------------------
-        #-- Extend the "clutches" with any ...                      |
-        #-- (relatively) new signatures that are in the given sqrls |
-        #------------------------------------------------------------
+        # ------------------------------------------------------------
+        # -- Extend the "SignatureAndGroupes" with any ...                      |
+        # -- (relatively) new signatures that are in the given sqrls |
+        # ------------------------------------------------------------
         sigs = set([sqrl.signature for sqrl in sqrls])
-        new_sigs = sigs - set(self._clutches.keys())
-        self._clutches.update(dict([(sig, Clutch(sig)) for sig in new_sigs]))
+        new_sigs = sigs - set(self._SignatureAndGroupes.keys())
+        self._SignatureAndGroupes.update(
+            dict([(sig, SignatureAndGroup(sig)) for sig in new_sigs]))
 
-        #-------------------------------------------------
-        #-- Add the given sqrls to our internal storage. |
-        #-------------------------------------------------
+        # -------------------------------------------------
+        # -- Add the given sqrls to our internal storage. |
+        # -------------------------------------------------
         for sqrl in sqrls:
-            #-- Update sqrls
+            # -- Update sqrls
             self._sqrls[sqrl.ID] = sqrl
-            #-- Update the clutches (index of NUCLS signature to SqRLs that have the same signature)
-            if sqrl.signature not in self._clutches:
-                self._clutches[sqrl.signature] = Clutch(sqrl.signature)
-            self._clutches[sqrl.signature].add(sqrl.ID)
+            # -- Update the SignatureAndGroupes (index of Nucleotides signature to SequenceAndSignatures that have the same signature)
+            if sqrl.signature not in self._SignatureAndGroupes:
+                self._SignatureAndGroupes[sqrl.signature] = SignatureAndRunsWithMetadata(
+                    sqrl.signature)
+            self._SignatureAndGroupes[sqrl.signature].add(sqrl.ID)
 
-        #-- call .changed to invalidate any cached data
+        # -- call .changed to invalidate any cached data
         self.changed()
 
     def add(self, sqrl, **kwargs):
@@ -517,9 +527,10 @@ class Group(JScribe):
 
         self._sqrls[sqrl.ID] = sqrl
 
-        if sqrl.signature not in self._clutches:
-            self._clutches[sqrl.signature] = Clutch(sqrl.signature)
-        self._clutches[sqrl.signature].add(sqrl.ID)
+        if sqrl.signature not in self._SignatureAndGroupes:
+            self._SignatureAndGroupes[sqrl.signature] = SignatureAndRunsWithMetadata(
+                sqrl.signature)
+        self._SignatureAndGroupes[sqrl.signature].add(sqrl.ID)
 
         self.changed()
 
@@ -533,15 +544,16 @@ class Group(JScribe):
             section[str(sqrl.ID)] = packet
         jdn['sqrls'] = section
 
-        if "-nucls" not in args:
-            jdn['nucls'] = dict(
+        if "-Nucleotides" not in args:
+            jdn['Nucleotides'] = dict(
                 [(str(n.signature), str(n.gzsequence)) for n in self.hand()])
 
-        if "-clutches" not in args:
-            jdn['clutches'] = {}
-            for sig in self.clutches:
-                c = self.clutch(sig)
-                jdn['clutches'][str(c.RDN)] = [str(member) for member in c]
+        if "-SignatureAndGroupes" not in args:
+            jdn['SignatureAndGroupes'] = {}
+            for sig in self.SignatureAndGroupes:
+                c = self.SignatureAndRunsWithMetadata(sig)
+                jdn['SignatureAndGroupes'][str(c.RDN)] = [
+                    str(member) for member in c]
 
         return jdn
 
@@ -554,9 +566,11 @@ class Group(JScribe):
             sig = packet[0]
             if len(packet) > 1:
                 seq = packet[1]
-                sqrl = SqRL(k, NUCLS(seq), group=this.grin)
+                sqrl = SequenceAndSignature(
+                    k, Nucleotides(seq), group=this.GroupIdentifier)
             else:
-                sqrl = SqRL(k, asDASH(sig), group=this.grin)
+                sqrl = SequenceAndSignature(
+                    k, as_DnaHash(sig), group=this.GroupIdentifier)
             sqrls.append(sqrl)
 
         this.extend(sqrls)
@@ -572,86 +586,3 @@ class Group(JScribe):
         with open(src_path, 'rt') as istream:
             jdn = json.load(istream)
             return cls.fromJDN(jdn, **kwargs)
-
-
-# class OLD_Contigalog:
-    # def __init__(self, db):
-        # """
-        # I implement that catalog in a given sqlite3 connection.
-        # """
-        # self.db = db
-        # self.install( )
-
-    # def install(self):
-        # c = self.db.cursor( )
-        # c.execute("CREATE TABLE IF NOT EXISTS contigalog (run TEXT PRIMARY KEY, signature TEXT, group TEXT, gzsequence BLOB, note TEXT)")
-        # c.execute("CREATE INDEX IF NOT EXISTS contigalog_groups ON contigalog (group)")
-        # c.execute("CREATE INDEX IF NOT EXISTS contigalog_sigs ON contigalog (signature)")
-
-    # def census(self):
-        # """
-        # I answer a dictionary of {sig: [run, ...]}
-        # """
-        # census = { }
-        # c = self.db.cursor( )
-        # c.execute("SELECT run, signature FROM contigalog")
-        # for row in c:
-            # run, sig = row
-            # if sig not in census:
-            # census[sig] = [ ]
-            # census[sig].append(run)
-        # return census
-
-    # def __getitem__(self, run):
-        # c = self.db.cursor( )
-        # c.execute("SELECT * FROM contigalog WHERE run = ?", (run,))
-        # rows = c.fetchall( )
-        # if rows:
-            # return GATTACA(*rows[0])
-        # else:
-            # raise KeyError(run)
-
-    # def add(self, duhna):
-        # """
-        # Given duhna (a reference to the movie Zootopia) as an instance of GATTACA,
-        # I add the given instance to the contigalog.
-        # """
-        # c = self.db.cursor( )
-        # c.execute("INSERT INTO contigalog (run, signature, group, gzsequence) VALUES (?, ?, ?, ?)", duhna)
-
-    # def groups(self):
-        # """
-        # I answer the set of distinct group names that are seen in the contigalog.
-        # """
-        # c = self.db.cursor( )
-        # c.execute("SELECT DISTINCT group FROM contigalog")
-        # return set([row[0] for row in c])
-
-    # def members(self, group):
-        # """
-        # Given a group, I answer a collection of runs that are part of the given group.
-        # """
-        # c = self.db.cursor( )
-        # c.execute("SELECT run FROM contigalog WHERE group = ?", (group,))
-        # return set([row[0] for row in c])
-
-    # def sames(self, target, **kwargs):
-        # """
-        # Given a target as one of...
-        # * a literal DNA sequence string, or ...
-        # * a GATTACA instance.
-        # I answer the set of runs that have the same signature as the given target.
-        # """
-        # if isinstance(target, GATTACA):
-            # return self.sames(signature = target.signature)
-        # elif isinstance(target, str):
-            # #-- Interpret this as a literal DNA sequence string.
-            # sig = GATTACA.shakeup(target)
-            # return self.members(sig)
-
-    # def tenants(self, spec):
-        # """
-        # I answer the set of groups that contain the given specimen sequence.
-        # spec can be either a DNA string or an instance of GATTACA.
-        # """
-        # raise NotImplementedError
