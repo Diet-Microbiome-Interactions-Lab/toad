@@ -1,0 +1,42 @@
+# https://setuptools.pypa.io/en/latest/userguide/quickstart.html
+[build-system]
+requires = ["setuptools>=65.5.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "toad"
+authors = [
+    {name = "Dane Deemer", email = "ddeemer@purdue.edu"},
+]
+description = "Tidy Analysis of DNA"
+requires-python = ">=3.11"
+keywords = ["one", "two"]
+# license = {text = "BSD-3-Clause"}
+classifiers = [
+    "Framework :: Flask",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "pymongo==4.*",
+    "pyyaml==6.*",
+
+    "biopython==1.81"
+]
+dynamic = ["version", "readme"]
+
+# [project.scripts]
+# my-script = "my_package.module:function"
+
+[project.urls]
+Homepage = "https://github.com/ddeemerpurdue/toad"
+# Documentation = ""
+Repository = "https://github.com/ddeemerpurdue/toad"
+Changelog = "https://github.com/ddeemerpurdue/toad/blob/main/CHANGELOG.md"
+
+
+# [tool.setuptools.packages.find]
+# include = ["DataNetwork"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}

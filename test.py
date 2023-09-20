@@ -1,12 +1,18 @@
 '''
 Hello
 '''
-import common
 
-myclass = common.DnaHash("ATGCATGCATGC")
-print(myclass)
+# from toad.utils import FASTx
+# import FASTx as fx
+# import common
 
+# myclass = common.DnaHash("ATGCATGCATGC")
+# print(myclass)
+# print(type(myclass))
+# print(dir(myclass))
+# print(myclass.shakeup)
 
+'''
 UniqueRunIDa = common.UniqueRunID("seqA")
 UniqueRunIDb = common.UniqueRunID("seqB")
 
@@ -42,3 +48,21 @@ groups = common.RunsWithMetadata(
     name="The A Team", sqrls=[sqrl1, sqrl2, sqrl3])
 
 print(groups._sqrls)
+'''
+
+
+# nucls = common.Nucleotides("ATGCATGC")
+# print(f'Nucls: {nucls[0]}-{nucls[1]}-{nucls[2]}')
+# value = fx.RxFASTA("Defline 1", nucls)
+# print(value)
+
+# fastq = fx.RxFASTQ("@M00649:185:000000000-KKYND:1:1101:15855:1733 1:N:0:GTCGTGAT+TGAACCTT",
+#                    "GTGTCAGCAGCCGCGGTAATACGTAGGTGGCAAGCGTTATCCGGAATCATTGGGCGTAAAGGGTGCGTAGGTGGCGTACTAAG",
+#                    "ABBBBFFFFFFBGGGGGGGGGGHHHHGGHGHHHGHGGG2GHHGGGGGGHHHHGHHGGEGHHHGFFFGFEFFFGGHEGGGHHHG")
+
+
+# print(fastq)
+
+# file = "tests/064997_1_S126_R1_filtered.fastq.gz"
+# mydata = fx.Reader(file, fx.RxFASTQ)
+# print(f'My Reader = {mydata}')

@@ -139,4 +139,93 @@ class RunsRoster(RunsCollection, JScribe):
 
 ---
 
-## Mongolia.py
+## FASTx.py
+
+**RxFASTA**: Requires a header and dna sequencing for **new**. Splits up the header into various tokens usng the native header.split() method (space splitter). **TODO**: This should be more accepting to other formats.
+
+Here's what's going on:
+
+- RxFASTA takes in header and DNA
+  - Header is the defline of a fasta file
+  - dna is either a string or a Nucleotide(dna) instance  
+    The header gets split into tokens (' ' separated) and the value returns:
+
+```python
+
+(UniqueRunID(OID), header, seq)
+
+```
+
+The difference between UniqueRunID(OID) and header is UniqueRunID is the first space-split string used as the instantiator for UniqueRunID.
+
+**RxFASTQ**: The difference from **RxFASTA** is also requiring quals:
+
+```python
+
+def __new__(cls, header, dna, quals):
+        about = FASTQ.parse_header(header)
+        OID = about['OID']
+
+        return tuple.__new__(cls, (OID, header, Nucleotides(dna), quals))
+
+```
+
+One unique thing is the parse_header method:
+
+```python
+
+@staticmethod
+def parse_header(header):
+
+    info = {}
+    header = header[1:]  # Getting rid of the @ sign
+    i = header.find(' ')
+
+    if i >= 0:
+        runfo = header[:i]
+        xtra = header[i+1:]
+
+        info['OID'] = runfo
+
+        run_fields = ['instrument', 'run',
+                        'flowcell', 'lane', 'tile', 'x', 'y']
+        run_dex = dict(zip(run_fields, runfo.split(':')))
+
+        xtra_fields = ['member', 'filtered', 'control', 'indexseq']
+        xtra_dex = dict(zip(xtra_fields, xtra.split(':')))
+
+        info.update(run_dex)
+        info.update(xtra_dex)
+
+    else:
+        info['ID'] = header
+
+    return info
+
+# Example Header:
+@M00649:185:000000000-KKYND:1:1101:15855:1733 1:N:0:GTCGTGAT+TGAACCTT
+```
+
+runfo == M00649:185:000000000-KKYND:1:1101:15855:1733  
+xtra = 1:N:0:GTCGTGAT+TGAACCTT
+
+```JSON
+{
+    "OID": "M006....1733",
+    "instrument": "M00649",
+    "run": 185
+}
+
+```
+
+...and so on.
+
+The full return value of the **RxFASTQ** class is:
+
+```python
+
+(OID, header, Nucleotides(dna), quals)
+# Example
+('M00649:185:000000000-KKYND:1:1101:15855:1733', '@M00649:185:000000000-KKYND:1:1101:15855:1733 1:N:0:GTCGTGAT+TGAACCTT', (('C^Gel37@>3SBXkt5tFE)',), 'GTGTCAGCAGCCGCGGTAATACGTAGGTGGCAAGCGTTATCCGGAATCATTGGGCGTAAAGGGTGCGTAGGTGGCGTACTAAG', None), 'ABBBBFFFFFFBGGGGGGGGGGHHHHGGHGHHHGHGGG2GHHGGGGGGHHHHGHHGGEGHHHGFFFGFEFFFGGHEGGGHHHG')
+
+```

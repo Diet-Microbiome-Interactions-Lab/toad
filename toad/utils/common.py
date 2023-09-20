@@ -10,6 +10,8 @@ import base64
 import operator
 import json
 
+import Bio
+
 """
 ## Notes on types and nomenclature
 Nucleotides  - NUCLeotide Sequence/String
@@ -124,6 +126,9 @@ class Nucleotides(tuple):
 
             if isinstance(seq, str):
                 return tuple.__new__(cls, (DnaHash(seq), seq, None))
+
+            if isinstance(seq, Bio.Seq.Seq):
+                return tuple.__new__(cls, (DnaHash(str(seq)), str(seq), None))
 
         if len(args) == 2:
             sig = as_DnaHash(args[0])

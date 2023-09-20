@@ -3,11 +3,14 @@ FASTx.py
 
 I am a library for working with FASTA and FASTQ files.
 """
-from .common import *
-import operator
-import pathlib
 import base64
 import hashlib
+import operator
+import pathlib
+
+import common as cx
+
+from Bio.SeqIO.FastaIO import SimpleFastaParser
 
 SIGSIZE = 16
 
@@ -57,7 +60,7 @@ class RxFASTA(tuple):
 
                 if state == 'SKIPPING':
                     if txtln[0] == '>':
-                        header = txtln[1:]
+                        header = txtln[1:]  # Strips the '>' from the header
                         nxtstate = 'SEQUENCE'
 
                 elif state == 'SEQUENCE':
@@ -82,7 +85,7 @@ class RxFASTQ(tuple):
     I am a FASTQ record instance.
     """
     def __new__(cls, header, dna, quals):
-        about = FASTQ.parse_header(header)
+        about = RxFASTQ.parse_header(header)
         OID = about['OID']
 
         return tuple.__new__(cls, (OID, header, Nucleotides(dna), quals))
@@ -91,6 +94,17 @@ class RxFASTQ(tuple):
     header = property(operator.itemgetter(1))
     sequence = property(operator.itemgetter(2))
     quality = property(operator.itemgetter(3))
+
+    @property
+    def to_mongo(self):
+        data = {
+            "mongo_collection": "Fastqs",
+            "type_": "Fastq",
+            "header": self.header,
+            "dna": self.sequence,
+            "quality": self.quality
+        }
+        return data
 
     @property
     def DnaHash(self):
@@ -116,10 +130,13 @@ class RxFASTQ(tuple):
         return "{}\n{}\n+\n{}\n".format(self.header, self.sequence, self.quality)
 
     @staticmethod
-    def parse_header(header):
+    def parse_header(header, default=True):
 
         info = {}
-        header = header[1:]
+
+        if not default:
+            header = header[1:]  # Getting rid of the @ sign
+
         i = header.find(' ')
 
         if i >= 0:
@@ -172,64 +189,3 @@ class RxFASTQ(tuple):
                 return cls(header, sequence, quals)
             else:
                 raise ValueError
-
-
-class Reader:
-    def __init__(self, istream, rxcls):
-        """
-        I am a FASTx reader that iterates over FASTA or FASTQ files.
-        I should be constructed as ...
-        Reader( f, RxFASTA )
-        Reader( f, RxFASTQ )
-        ...or using my class methods like ...
-        Reader.FASTA( f )
-        Reader.FASTQ( f )
-        """
-        self.istream = istream
-        self.rxcls = rxcls
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        obj = self.rxcls.read_from(self.istream)
-        if obj:
-            return obj
-        else:
-            raise StopIteration
-
-    def close(self):
-        self.istream.close()
-
-    @classmethod
-    def FASTA(cls, fp):
-        return cls(fp, RxFASTA)
-
-    @classmethod
-    def FASTQ(cls, fp):
-        return cls(fp, RxFASTQ)
-
-    @classmethod
-    def open(cls, path, fformat=None):
-        path = pathlib.Path(path)
-
-        fformat = fformat.lower() if (fformat is not None) else path.suffix
-
-        loaders = {
-            'fasta': RxFASTA,
-            'fastq': RxFASTQ,
-            '.fasta': RxFASTA,
-            '.fastq': RxFASTQ
-        }
-
-        if fformat in loaders:
-            rxcls = loaders[fformat]
-        else:
-            raise ValueError(
-                "file {} has unknown format '{}'".format(str(path), fformat))
-
-        src = open(path, 'rt')
-        return cls(src, rxcls)
-
-
-TESTFILE = '/depot/agdata/data/users/ndenny/microbiome/stability.trim.contigs.fasta'
