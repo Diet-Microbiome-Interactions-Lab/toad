@@ -3,18 +3,14 @@ FASTx.py
 
 I am a library for working with FASTA and FASTQ files.
 """
-import base64
-import hashlib
 import operator
-import pathlib
 
-import common as cx
+from toad.utils import common as cx
 
-from Bio.SeqIO.FastaIO import SimpleFastaParser
 
 SIGSIZE = 16
 
-
+'''
 class RxFASTA(tuple):
     """
     I am a FASTA record instance.
@@ -79,6 +75,8 @@ class RxFASTA(tuple):
         else:
             return None
 
+'''
+
 
 class RxFASTQ(tuple):
     """
@@ -88,7 +86,7 @@ class RxFASTQ(tuple):
         about = RxFASTQ.parse_header(header)
         OID = about['OID']
 
-        return tuple.__new__(cls, (OID, header, Nucleotides(dna), quals))
+        return tuple.__new__(cls, (OID, header, cx.Nucleotides(dna), quals))
 
     ID = property(operator.itemgetter(0))
     header = property(operator.itemgetter(1))

@@ -1,4 +1,5 @@
 __pycache__/
+toad/tests/*
 *.py[cod]
 .DS_Store
 .vscode/
