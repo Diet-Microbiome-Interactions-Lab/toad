@@ -5,7 +5,7 @@ I am a library for working with FASTA and FASTQ files.
 """
 import operator
 
-from toad.utils import common as cx
+from toad.lib import common as cx
 
 
 SIGSIZE = 16

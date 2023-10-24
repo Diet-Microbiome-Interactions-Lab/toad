@@ -1,6 +1,6 @@
 import argparse
 
-from toad.DB import mongolia as mx
+from toad.db import mongolia as mx
 
 
 def parse_args():
