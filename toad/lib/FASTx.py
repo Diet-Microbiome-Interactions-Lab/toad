@@ -10,25 +10,36 @@ from toad.lib import common as cx
 
 SIGSIZE = 16
 
-'''
+
 class RxFASTA(tuple):
     """
     I am a FASTA record instance.
     """
     def __new__(cls, header, dna):
-        seq = Nucleotides(dna)
+        seq = cx.Nucleotides(dna)
 
         tokens = header.split()
+        # TODO  Maybe a self.parse_header() method, as in RxFASTQ?
         OID = tokens[0]
 
-        return tuple.__new__(cls, (UniqueRunID(OID), header, seq))
+        return tuple.__new__(cls, (cx.UniqueRunID(OID), header, seq))
 
     ID = property(operator.itemgetter(0))
     header = property(operator.itemgetter(1))
     sequence = property(operator.itemgetter(2))
 
     def toSequenceAndSignature(self, **kwargs):
-        return SequenceAndSignature(self.ID, self.sequence, **kwargs)
+        return cx.SequenceAndSignature(self.ID, self.sequence, **kwargs)
+
+    @property
+    def to_mongo(self):
+        data = {
+            "mongo_collection": "Fastas",
+            "type_": "Fasta",
+            "header": self.header,
+            "dna": self.sequence,
+        }
+        return data
 
     @property
     def signature(self):
@@ -37,45 +48,8 @@ class RxFASTA(tuple):
     @property
     def DnaHash(self):
         if getattr(self, '_DnaHash', None) is None:
-            self._DnaHash = DnaHash(self.sequence)
+            self._DnaHash = cx.DnaHash(self.sequence)
         return self._DnaHash
-
-    @classmethod
-    def read_from(cls, fin):
-
-        header = None
-        seqlns = []
-
-        state = 'SKIPPING'
-        while state != 'DONE':
-            fmark = fin.tell()
-            txtln = fin.readline()
-
-            if txtln:
-                txtln = txtln.strip()
-
-                if state == 'SKIPPING':
-                    if txtln[0] == '>':
-                        header = txtln[1:]  # Strips the '>' from the header
-                        nxtstate = 'SEQUENCE'
-
-                elif state == 'SEQUENCE':
-                    if txtln[0] == '>':
-                        fin.seek(fmark)
-                        nxtstate = 'DONE'
-                    else:
-                        seqlns.append(txtln)
-            else:
-                nxtstate = 'DONE'
-
-            state = nxtstate
-
-        if header and seqlns:
-            return cls(header, ''.join(seqlns))
-        else:
-            return None
-
-'''
 
 
 class RxFASTQ(tuple):

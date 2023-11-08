@@ -42,7 +42,7 @@ def MongoInserter(documents, db_name="DEFAULT", db_ad="localhost", port=27017, c
     db = client[db_name]
     print(f'Success with db')
     coll_name = config['collection']
-    print(f'Coll name = {coll_name}')
+    print(f'{coll_name=}')
     collection = db[coll_name]
     print(f'Success init coll')
     collection.insert_many(documents)
@@ -65,14 +65,26 @@ def create_file_handle(file):
     return (_open, type_)
 
 
-def Reader(folder: str, config, verbose: bool = False) -> 0:
+def Reader(folder: str, files: list, config, verbose: bool = False) -> 0:
     '''
     May want to split this into 2 functions.
     '''
     start = time.time()
     print(f'Start time...')
     total_sequences = 0
-    for file in glob.glob(f"{folder}/*"):
+    if not folder and not files:
+        return 'No files were specified to read.'
+    if folder:
+        all_files = glob.glob(f"{folder}/*")
+        all_files.extend(files)
+    else:
+        all_files = files
+    print(all_files)
+    print(config.show())
+    import sys
+    sys.exit()
+    # for file in glob.glob(f"{folder}/*"):
+    for file in all_files:
         print(f'Ingesting {file}...')
         # try to get metadata from them based on config
         _open, type_ = create_file_handle(file)
@@ -89,10 +101,15 @@ def Reader(folder: str, config, verbose: bool = False) -> 0:
                     print(
                         f'Processed {cnt} samples in {iter_end - start} seconds.')
                     documents = []
-
-                fastq = fx.RxFASTQ(record.description, record.seq,
-                                   record.letter_annotations["phred_quality"])
-                document = fastq.to_mongo
+                if type_ == "fastq":
+                    fastq = fx.RxFASTQ(record.description, record.seq,
+                                       record.letter_annotations["phred_quality"])
+                    document = fastq.to_mongo
+                elif type_ == "fasta":
+                    print(f'Ingesting fasta file...\n')
+                    fasta = fx.RxFASTA(record.description, record.seq)
+                    document = fasta.to_mongo
+                    print(document)
                 document['lab'] = config['lab']
 
                 documents.append(document)
