@@ -23,6 +23,13 @@ def RandomMetadata():
     return (random.choice(labs), random.choice(source), random.choice(location))
 
 
+def RandomMetadata():
+    labs = ['Cross', 'Enders', 'Lindemann', 'Unknown']
+    source = ['Plant', 'Gut', 'Soil']
+    location = ['Indiana', 'Michigan', 'Tennessee', 'Kentucky']
+    return (random.choice(labs), random.choice(source), random.choice(location))
+
+
 def MongoInserter(documents, db_name="DEFAULT", db_ad="localhost", port=27017, config=None):
     '''
     Eventually want to turn this into a class we can instantiate and then
@@ -67,6 +74,7 @@ def Reader(folder: str, config, verbose: bool = False) -> 0:
     total_sequences = 0
     for file in glob.glob(f"{folder}/*"):
         print(f'Ingesting {file}...')
+        # try to get metadata from them based on config
         _open, type_ = create_file_handle(file)
         metadata = RandomMetadata()
 
@@ -96,13 +104,24 @@ def Reader(folder: str, config, verbose: bool = False) -> 0:
     return 0
 
 
-def MongoQuery(key, value):
+def MongoQuery(**kwargs):
     client = MongoClient("localhost", 27017)
     db = client.toad_test
     collection = db.fastq_tests
     start = time.time()
 
-    docs = list(collection.find({key: value}))
+    query = []
+    for key, value in kwargs.items():
+        query.append({key: value})
+    print(f'Query:\n{query}')
+    myfilter = {"$and": query}
+    print(f'My filter:\n{myfilter}')
+    values = list(collection.find(myfilter))
+    print(f'Found {len(values)} documents matching')
+    for val in values[0:3]:
+        print(val)
+
+    # docs = list(collection.find({key: value}))
     end = time.time()
     print(end - start)
-    return docs
+    return 0

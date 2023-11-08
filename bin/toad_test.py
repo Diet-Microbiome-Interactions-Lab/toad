@@ -20,6 +20,10 @@ class Toad(clix.App):
     def _get_configuration_folders(self):
         return [os.path.expanduser('~/.config/toad')]  # Talking point
 
+    def do_show_config(self, barewords, **kwargs):
+        self.conf.show()
+        return self.succeeded(msg="Configuration shown.")
+
     def do_mock_test(self, barewords, **kwargs):
         # toadstool mock test scan: /data/folder job.file: $HOME/job1
         target_file = self.conf['job.file']
@@ -34,10 +38,25 @@ class Toad(clix.App):
         return 0
 
     def do_ingest_reads(self, barewords, **kwargs):
+        # python toad_test.py ingest reads scan: ../toad/tests/ collection: fastq_tests
         print(self.conf.show())
         scan = self.conf['scan']
         mx.Reader(scan, self.conf)
         self.succeeded(msg="Good job for making the mock work!", dex=[1, 2, 3])
+        return 0
+
+    def do_vomit_reads(self, barewords, **kwargs):
+        # python toad_test.py vomit reads seq: sequence
+        filter_args = {}
+        for value in self.conf['filter']:
+            print(f'Running through {value}')
+            k, v = value[0], value[1]
+            filter_args[k] = v
+        print(f'filter_args={filter_args}')
+        # print(f'Vomitting:\n{self.conf.show()}')
+        print(filter_args)
+        mx.MongoQuery(**filter_args)
+        self.succeeded(msg="Good job, success")
         return 0
 
 

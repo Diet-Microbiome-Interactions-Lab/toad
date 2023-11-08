@@ -1,0 +1,536 @@
+031876:
+  location: ca
+  pi: lindemann
+  source: dog_man
+064997:
+  location: ca
+  pi: lindemann
+  source: space
+064998:
+  location: nc
+  pi: lindemann
+  source: dog_man
+064999:
+  location: ma
+  pi: cross
+  source: space
+065000:
+  location: ca
+  pi: verma
+  source: gut
+065001:
+  location: wa
+  pi: cross
+  source: soil
+065002:
+  location: mi
+  pi: cross
+  source: rhizome
+065003:
+  location: in
+  pi: verma
+  source: soil
+065004:
+  location: ma
+  pi: verma
+  source: rhizome
+065005:
+  location: nc
+  pi: cross
+  source: dog_feet
+065006:
+  location: mi
+  pi: cross
+  source: gut
+065007:
+  location: mi
+  pi: lindemann
+  source: soil
+065008:
+  location: ma
+  pi: cross
+  source: rhizome
+065009:
+  location: nc
+  pi: cross
+  source: space
+065010:
+  location: ma
+  pi: enders
+  source: dog_feet
+065011:
+  location: ca
+  pi: lindemann
+  source: space
+065012:
+  location: ca
+  pi: enders
+  source: soil
+065013:
+  location: fl
+  pi: cross
+  source: rhizome
+065014:
+  location: in
+  pi: cross
+  source: space
+065015:
+  location: sc
+  pi: lindemann
+  source: dog_man
+065016:
+  location: ca
+  pi: enders
+  source: gut
+065017:
+  location: nc
+  pi: lindemann
+  source: dog_man
+065018:
+  location: fl
+  pi: cross
+  source: dog_man
+065019:
+  location: ca
+  pi: cross
+  source: soil
+065020:
+  location: ca
+  pi: cross
+  source: rhizome
+065021:
+  location: mi
+  pi: enders
+  source: gut
+065022:
+  location: sc
+  pi: enders
+  source: rhizome
+065023:
+  location: nc
+  pi: verma
+  source: dog_man
+065024:
+  location: ca
+  pi: enders
+  source: space
+065025:
+  location: wa
+  pi: lindemann
+  source: gut
+065026:
+  location: ca
+  pi: lindemann
+  source: soil
+065027:
+  location: ma
+  pi: cross
+  source: space
+065028:
+  location: in
+  pi: cross
+  source: rhizome
+065029:
+  location: wa
+  pi: enders
+  source: dog_man
+065030:
+  location: fl
+  pi: lindemann
+  source: gut
+065031:
+  location: sc
+  pi: enders
+  source: dog_feet
+065032:
+  location: in
+  pi: lindemann
+  source: dog_feet
+065033:
+  location: wa
+  pi: verma
+  source: soil
+065034:
+  location: ma
+  pi: lindemann
+  source: rhizome
+065035:
+  location: ma
+  pi: verma
+  source: gut
+065036:
+  location: wa
+  pi: verma
+  source: soil
+065037:
+  location: mi
+  pi: verma
+  source: rhizome
+065038:
+  location: fl
+  pi: enders
+  source: soil
+065039:
+  location: fl
+  pi: cross
+  source: rhizome
+065040:
+  location: sc
+  pi: enders
+  source: dog_feet
+065041:
+  location: ca
+  pi: enders
+  source: soil
+065042:
+  location: ma
+  pi: lindemann
+  source: soil
+065043:
+  location: wa
+  pi: lindemann
+  source: rhizome
+065044:
+  location: sc
+  pi: cross
+  source: space
+065045:
+  location: fl
+  pi: verma
+  source: space
+065046:
+  location: nc
+  pi: enders
+  source: rhizome
+065047:
+  location: fl
+  pi: verma
+  source: rhizome
+065048:
+  location: sc
+  pi: verma
+  source: space
+065049:
+  location: nc
+  pi: lindemann
+  source: space
+067894:
+  location: ca
+  pi: enders
+  source: dog_man
+067895:
+  location: sc
+  pi: cross
+  source: soil
+067896:
+  location: wa
+  pi: lindemann
+  source: dog_feet
+067897:
+  location: mi
+  pi: lindemann
+  source: gut
+067898:
+  location: nc
+  pi: cross
+  source: gut
+067899:
+  location: ma
+  pi: enders
+  source: soil
+067900:
+  location: nc
+  pi: enders
+  source: soil
+067901:
+  location: ma
+  pi: enders
+  source: rhizome
+067902:
+  location: nc
+  pi: enders
+  source: rhizome
+067903:
+  location: mi
+  pi: cross
+  source: soil
+067904:
+  location: ma
+  pi: cross
+  source: rhizome
+067905:
+  location: ca
+  pi: verma
+  source: gut
+067906:
+  location: ma
+  pi: cross
+  source: dog_feet
+067907:
+  location: ca
+  pi: verma
+  source: dog_feet
+067908:
+  location: nc
+  pi: cross
+  source: dog_man
+067909:
+  location: nc
+  pi: cross
+  source: space
+067910:
+  location: ca
+  pi: cross
+  source: rhizome
+067911:
+  location: wa
+  pi: verma
+  source: gut
+067912:
+  location: fl
+  pi: verma
+  source: gut
+067913:
+  location: wa
+  pi: enders
+  source: gut
+067914:
+  location: mi
+  pi: verma
+  source: dog_man
+067915:
+  location: nc
+  pi: cross
+  source: rhizome
+067916:
+  location: in
+  pi: lindemann
+  source: gut
+067917:
+  location: wa
+  pi: verma
+  source: soil
+067918:
+  location: nc
+  pi: cross
+  source: space
+067919:
+  location: ma
+  pi: cross
+  source: gut
+067920:
+  location: ca
+  pi: verma
+  source: dog_man
+067921:
+  location: ma
+  pi: enders
+  source: rhizome
+067922:
+  location: nc
+  pi: lindemann
+  source: gut
+067923:
+  location: mi
+  pi: verma
+  source: dog_man
+067924:
+  location: nc
+  pi: lindemann
+  source: space
+067925:
+  location: ma
+  pi: verma
+  source: dog_feet
+067926:
+  location: wa
+  pi: cross
+  source: dog_feet
+067927:
+  location: in
+  pi: verma
+  source: soil
+067928:
+  location: nc
+  pi: enders
+  source: space
+067929:
+  location: nc
+  pi: verma
+  source: soil
+067930:
+  location: ca
+  pi: cross
+  source: space
+067931:
+  location: nc
+  pi: lindemann
+  source: rhizome
+067932:
+  location: mi
+  pi: enders
+  source: dog_man
+067933:
+  location: sc
+  pi: enders
+  source: space
+067934:
+  location: ma
+  pi: enders
+  source: rhizome
+067935:
+  location: wa
+  pi: cross
+  source: dog_man
+067936:
+  location: in
+  pi: verma
+  source: dog_feet
+067937:
+  location: fl
+  pi: verma
+  source: gut
+067938:
+  location: nc
+  pi: lindemann
+  source: space
+067939:
+  location: sc
+  pi: cross
+  source: rhizome
+067940:
+  location: nc
+  pi: enders
+  source: soil
+067941:
+  location: mi
+  pi: verma
+  source: gut
+067942:
+  location: fl
+  pi: enders
+  source: dog_man
+067943:
+  location: ma
+  pi: cross
+  source: dog_man
+067944:
+  location: nc
+  pi: lindemann
+  source: soil
+067945:
+  location: ma
+  pi: verma
+  source: dog_man
+067946:
+  location: ca
+  pi: enders
+  source: space
+067947:
+  location: sc
+  pi: enders
+  source: soil
+067948:
+  location: sc
+  pi: enders
+  source: dog_man
+067949:
+  location: mi
+  pi: cross
+  source: dog_man
+067950:
+  location: ma
+  pi: cross
+  source: soil
+067951:
+  location: in
+  pi: enders
+  source: rhizome
+067952:
+  location: sc
+  pi: enders
+  source: space
+067953:
+  location: in
+  pi: enders
+  source: dog_man
+067954:
+  location: sc
+  pi: cross
+  source: rhizome
+067955:
+  location: ma
+  pi: enders
+  source: rhizome
+067956:
+  location: ma
+  pi: verma
+  source: soil
+067957:
+  location: wa
+  pi: cross
+  source: gut
+067958:
+  location: in
+  pi: verma
+  source: space
+067959:
+  location: sc
+  pi: cross
+  source: rhizome
+067960:
+  location: fl
+  pi: lindemann
+  source: space
+067961:
+  location: ma
+  pi: enders
+  source: space
+067962:
+  location: fl
+  pi: verma
+  source: space
+067963:
+  location: mi
+  pi: lindemann
+  source: space
+068544:
+  location: sc
+  pi: cross
+  source: rhizome
+068545:
+  location: ca
+  pi: enders
+  source: soil
+068546:
+  location: sc
+  pi: enders
+  source: rhizome
+068547:
+  location: sc
+  pi: cross
+  source: soil
+068548:
+  location: wa
+  pi: lindemann
+  source: dog_feet
+068549:
+  location: ca
+  pi: verma
+  source: dog_man
+068550:
+  location: sc
+  pi: lindemann
+  source: rhizome
+068551:
+  location: ca
+  pi: enders
+  source: gut
+068552:
+  location: ca
+  pi: lindemann
+  source: dog_man
+068553:
+  location: wa
+  pi: cross
+  source: dog_man
