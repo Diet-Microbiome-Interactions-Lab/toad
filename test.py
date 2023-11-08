@@ -2,7 +2,7 @@
 Hello
 '''
 
-# from toad.utils import FASTx
+# from toad.lib import FASTx
 # import FASTx as fx
 # import common
 

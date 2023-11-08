@@ -1,5 +1,5 @@
 # """
-# TOAD.DB.sqlite
+# TOAD.db.sqlite
 
 # I am the sqlite storage subsystem.
 # Each project (which can have multiple groups associated) is a single sqlite file.
@@ -8,7 +8,7 @@
 # import logging
 
 # from TOAD.common import *
-# import TOAD.DB.common
+# import TOAD.db.common
 
 # logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@
 #             yield self[k]
 
 
-# class Pi(TOAD.DB.common.Pi):
+# class Pi(TOAD.db.common.Pi):
 #     def __init__(self, db_path):
 #         logger.debug("opening db at {}".format(db_path))
 #         self.db = sqlite3.connect(db_path)

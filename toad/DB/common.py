@@ -1,7 +1,7 @@
 # """
-# TOAD.DB.common
+# TOAD.db.common
 
-# I hold the common data structures, interfaces, etc. for working with TOAD.DB storage (sub) systems.
+# I hold the common data structures, interfaces, etc. for working with TOAD.db storage (sub) systems.
 # """
 
 
