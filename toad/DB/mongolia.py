@@ -82,7 +82,6 @@ def Reader(folder: str, files: list, config, verbose: bool = False) -> 0:
     print(all_files)
     print(config.show())
     import sys
-    sys.exit()
     # for file in glob.glob(f"{folder}/*"):
     for file in all_files:
         print(f'Ingesting {file}...')
@@ -106,10 +105,8 @@ def Reader(folder: str, files: list, config, verbose: bool = False) -> 0:
                                        record.letter_annotations["phred_quality"])
                     document = fastq.to_mongo
                 elif type_ == "fasta":
-                    print(f'Ingesting fasta file...\n')
                     fasta = fx.RxFASTA(record.description, record.seq)
                     document = fasta.to_mongo
-                    print(document)
                 document['lab'] = config['lab']
 
                 documents.append(document)
