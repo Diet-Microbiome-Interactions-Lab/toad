@@ -37,8 +37,9 @@ def MongoInserter(documents, db_name="DEFAULT", db_ad="localhost", port=27017, c
     '''
     if config:
         print(f'Config is yes')
-        db_name, db_ad, port = config['db'], config['db_address'], config['port']
-    client = MongoClient(db_ad, port)
+        # db_name, db_ad, port = config['db'], config['db_address'], config['port']
+        db_name, db_uri = config['db'], config['uri']
+    client = MongoClient(db_uri)
     db = client[db_name]
     print(f'Success with db')
     coll_name = config['collection']

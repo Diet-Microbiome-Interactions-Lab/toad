@@ -1,0 +1,9 @@
+---
+source: "microbiome"
+lab: "lindemann"
+user: "ddeemer"
+project: "DOE"
+db_address: "localhost"
+port: 27017
+db: "toad_test"
+uri: "mongodb://localhost:27017"
