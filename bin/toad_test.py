@@ -39,13 +39,24 @@ class Toad(clix.App):
 
     def do_ingest_reads(self, barewords, **kwargs):
         # python toad_test.py ingest reads scan: ../toad/tests/ collection: fastq_tests
+        # Each DO_X_Y has required params --> need a way to see this
         print(self.conf.show())
         scan = self.conf['scan']
         mx.Reader(scan, self.conf)
         self.succeeded(msg="Good job for making the mock work!", dex=[1, 2, 3])
         return 0
 
+    def do_ingest_contigs(self, barewords, **kwargs):
+        scan = self.conf.get('scan', [])
+        files = self.conf.get('files', [])
+        print(f'Going into mx.Reader')
+        mx.Reader(scan, files, self.conf)
+        self.succeeded(msg="Fasta job succeeded.")
+
     def do_vomit_reads(self, barewords, **kwargs):
+        '''
+        Vomit reads docline
+        '''
         # python toad_test.py vomit reads seq: sequence
         filter_args = {}
         for value in self.conf['filter']:
