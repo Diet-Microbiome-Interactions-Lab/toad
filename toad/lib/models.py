@@ -48,6 +48,7 @@ class Fasta(CoreModel):
     mongodb_collection: str = "Fastas"
     type_: str = "Fasta"
     name: str
+    # header: str
     sequence: str
     description: str
     # symbol: Optional[str] = "default.jpg"

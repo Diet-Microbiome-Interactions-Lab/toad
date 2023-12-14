@@ -116,6 +116,7 @@ def insert_to_mongo_collection(entry: BaseModel, db_mongo_collection_name: str, 
         list(collection.find({"$or": field_filters}))) != 0
 
     if not found_matching_entries:
+        print(f'No duplicate entries found with: {field_filters=}')
         try:
             return (dumps(collection.insert_one(entry.to_bson()).inserted_id), 201, {'ContentType': 'application/json'})
         except Exception as e:

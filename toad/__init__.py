@@ -55,6 +55,9 @@ def create_app(config_class=Config):
     from toad.api.amplicon import api_amplicon
     app.register_blueprint(api_amplicon)
 
+    from toad.routes import main
+    app.register_blueprint(main)
+
     from toad.api.lib.dn_exceptions import DBInsertException, RequestValidationException
     app.register_error_handler(
         RequestValidationException, handle_http_exception)
