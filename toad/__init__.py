@@ -52,11 +52,12 @@ def create_app(config_class=Config):
 
     mongo.init_app(app)
 
-    from toad.api.amplicon import api_amplicon
-    app.register_blueprint(api_amplicon)
-
     from toad.routes import main
     app.register_blueprint(main)
+    from toad.api.amplicon import api_amplicon
+    app.register_blueprint(api_amplicon)
+    from toad.api.users import api_user
+    app.register_blueprint(api_user)
 
     from toad.api.lib.dn_exceptions import DBInsertException, RequestValidationException
     app.register_error_handler(

@@ -53,3 +53,12 @@ class Fasta(CoreModel):
     description: str
     # symbol: Optional[str] = "default.jpg"
     # incompatibilities: list = []
+
+
+class User(CoreModel):
+    mongodb_collection: str = "Users"
+    type_: str = "User"
+    email: str
+    password: str
+    first_name: str
+    last_name: str

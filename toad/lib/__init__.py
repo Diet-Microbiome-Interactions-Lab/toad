@@ -17,8 +17,10 @@ class Toad(clix.App):
         "report.form": "prose"
     }
 
-    def __init__(self, run_mode="cli", comargs=sys.argv[1:]):
+    def __init__(self, run_mode="cli", comargs=sys.argv[1:], qparams=None, mode='debug'):
         self.run_mode = run_mode
+        self.qparams = qparams
+        self.mode = mode
         clix.App.__init__(self, name="toad",
                           run_mode=run_mode, comargs=comargs)
 
@@ -30,14 +32,8 @@ class Toad(clix.App):
         return self.succeeded(msg="Configuration shown.")
 
     def do_mock_test(self, barewords, **kwargs):
-        # toadstool mock test scan: /data/folder job.file: $HOME/job1
         target_file = self.conf['job.file']
         data_folder = self.conf['scan']
-        # print(f'Target file: {target_file}')
-        # print(f'Data folder: {data_folder}')
-        # print(f'Barewords: {barewords}, args: {kwargs}')
-        # for bareword in barewords:
-        #     print(f'In mock test, running {bareword}')
 
         self.succeeded(msg="Good job for making the mock work!", dex=[1, 2, 3])
         return 0
@@ -45,7 +41,8 @@ class Toad(clix.App):
     def do_ingest_reads(self, barewords, **kwargs):
         # python toad_test.py ingest reads scan: ../toad/tests/ collection: fastq_tests
         # Each DO_X_Y has required params --> need a way to see this
-        print(self.conf.show())
+        if self.mode == 'debug':
+            print(self.conf.show())
         scan = self.conf['scan']
         mx.Reader(scan, self.conf)
         self.succeeded(msg="Good job for making the mock work!", dex=[1, 2, 3])
@@ -53,8 +50,7 @@ class Toad(clix.App):
 
     def do_show_fasta(self, barewords, **kwargs):
         api_prefix = self.conf.get('api_prefix')
-        response = mx.query_fasta(api_prefix=api_prefix)
-        print(f'Returned data:\n{response}')
+        response = mx.query_fasta(api_prefix=api_prefix, qparams=self.qparams)
         self.succeeded(
             msg="Test to grab 1 fasta file from the API call", dex=response)
         return 0
@@ -62,7 +58,8 @@ class Toad(clix.App):
     def do_ingest_contigs(self, barewords, **kwargs):
         scan = self.conf.get('scan', [])
         files = self.conf.get('files', [])
-        print(f'Going into mx.Reader')
+        if self.mode == 'debug':
+            print(f'Going into mx.Reader')
         mx.Reader(scan, files, self.conf)
         self.succeeded(msg="Fasta job succeeded.")
 
@@ -73,12 +70,12 @@ class Toad(clix.App):
         # python toad_test.py vomit reads seq: sequence
         filter_args = {}
         for value in self.conf['filter']:
-            print(f'Running through {value}')
+            if self.mode == 'debug':
+                print(f'Running through {value}')
             k, v = value[0], value[1]
             filter_args[k] = v
-        print(f'filter_args={filter_args}')
-        # print(f'Vomitting:\n{self.conf.show()}')
-        print(filter_args)
+        if self.mode == 'debug':
+            print(f'filter_args={filter_args}')
         mx.MongoQuery(**filter_args)
         self.succeeded(msg="Good job, success")
         return 0

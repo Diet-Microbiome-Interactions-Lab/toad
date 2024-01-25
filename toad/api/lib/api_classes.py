@@ -45,7 +45,6 @@ class DefaultAPI(MethodView):
             raise RequestValidationException(f'{Datamodel}: {error}')
 
     def get(self, id: str):
-        print(f'Attempting to get')
         filter_ = parse_qstring(request.args, self.model)
         return get_entry(self.collection, id_=id, qstring_filter=filter_)
 

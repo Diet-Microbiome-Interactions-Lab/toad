@@ -34,7 +34,7 @@ def RandomMetadata():
 
 
 # def MongoInserter(documents, db_name="DEFAULT", db_ad="localhost", port=27017, config=None):
-def FastaInserter(documents, api_prefix="https://127.0.0.1:5000/api/v1", config=None):
+def FastaInserter(documents, api_prefix="http//127.0.0.1:5000/api/v1", config=None):
     '''
     Eventually want to turn this into a class we can instantiate and then
     create a method for adding to the collection
@@ -67,7 +67,7 @@ def FastaInserter(documents, api_prefix="https://127.0.0.1:5000/api/v1", config=
     # return 0
 
 
-def query_fasta(api_prefix="https://127.0.0.1:5000/api/v1", **kwargs):
+def query_fasta(api_prefix="http://127.0.0.1:5000/api/v1", **kwargs):
     '''
     General query call to grab fasta files
     '''
@@ -170,17 +170,20 @@ def MongoQuery(**kwargs):
     return 0
 
 
-def query_fasta(api_prefix="https://127.0.0.1:5000/api/v1", **kwargs):
+def query_fasta(api_prefix="http://127.0.0.1:5000/api/v1", qparams=None, **kwargs):
     '''
     General query call to grab fasta files
     '''
     api_suffix = "amplicon/fastas"
     api_uri = os.path.join(api_prefix, api_suffix)
-    response = requests.get(api_uri, verify=False, timeout=1.5)
+    print(f'API query = {api_uri}')
+    print(f'[mx.query_fasta]: {qparams=}')
+    response = requests.get(api_uri, params=qparams,
+                            verify=False, timeout=1.5)
     return response.json()
 
 
-def post_fasta(api_prefix="https://127.0.0.1:5000/api/v1", **kwargs):
+def post_fasta(api_prefix="http://127.0.0.1:5000/api/v1", **kwargs):
     '''
     General post call
     '''
