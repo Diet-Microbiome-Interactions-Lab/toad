@@ -5,6 +5,7 @@ toad/tests/*
 .vscode/
 # C extensions
 *.so
+.vscode/*
 
 # Distribution / packaging
 #bin/

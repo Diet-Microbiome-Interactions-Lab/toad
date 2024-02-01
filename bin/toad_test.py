@@ -1,10 +1,14 @@
-from toad.db import mongolia as mx
+'''
+Test suite for TOAD
+'''
 import logging
 import os
 import sys
 
 from caragols.lib import clix
-# from toad.
+
+from toad.db import mongolia as mx
+# from toad.lib import Toad
 
 
 class Toad(clix.App):
@@ -14,8 +18,8 @@ class Toad(clix.App):
         "report.form": "prose"
     }
 
-    def __init__(self):
-        clix.App.__init__(self, "toad")
+    def __init__(self, run_mode='cli', comargs=sys.argv[1:]):
+        clix.App.__init__(self, "toad", run_mode=run_mode, comargs=comargs)
 
     def _get_configuration_folders(self):
         return [os.path.expanduser('~/.config/toad')]  # Talking point
@@ -46,6 +50,23 @@ class Toad(clix.App):
         self.succeeded(msg="Good job for making the mock work!", dex=[1, 2, 3])
         return 0
 
+    def do_show_fasta(self, barewords, **kwargs):
+        api_prefix = self.conf.get('api_prefix')
+        response = mx.query_fasta(api_prefix=api_prefix)
+        print(f'Returned data:\n{response}')
+        self.succeeded(
+            msg="Test to grab 1 fasta file from the API call", dex=response)
+        return 0
+
+    def do_test_ingest_reads(self, barewords, **kwargs):
+        api_prefix = self.conf.get('api_prefix')
+        response = mx.post_fasta(api_prefix=api_prefix)
+        # Report creation
+        self.succeeded(
+            msg="Successfully posted through the api", dex=response)
+        print(self.conf.show())
+        return 0
+
     def do_ingest_contigs(self, barewords, **kwargs):
         scan = self.conf.get('scan', [])
         files = self.conf.get('files', [])
@@ -73,6 +94,3 @@ class Toad(clix.App):
 
 if __name__ == "__main__":
     myapp = Toad()
-    comargs = sys.argv[1:]
-    myapp.conf.sed(comargs)
-    print(myapp.conf.show())
