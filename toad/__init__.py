@@ -4,7 +4,11 @@ TOAD
 I am a package supporting the Tool for Organization and Analysis of DNA (TOAD).
 version = "0.1.0"
 """
+from pathlib import Path
+import sys
+
 from flask import Flask
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 
@@ -12,6 +16,7 @@ from toad.config import Config
 
 FRONTEND_URL = 'http://localhost:5173'
 
+bcrypt = Bcrypt()
 mongo = PyMongo()
 
 
@@ -41,7 +46,7 @@ def handle_http_exception(e):
     return response
 
 
-def create_app(config_class=Config):
+def create_app(config_class=Config, seed=None):
     '''
     Creating the app
     '''
@@ -51,6 +56,7 @@ def create_app(config_class=Config):
     app.after_request(after_request)
 
     mongo.init_app(app)
+    bcrypt.init_app(app)
 
     from toad.routes import main
     app.register_blueprint(main)
@@ -63,5 +69,11 @@ def create_app(config_class=Config):
     app.register_error_handler(
         RequestValidationException, handle_http_exception)
     app.register_error_handler(DBInsertException, handle_http_exception)
+
+    if seed:
+        sys.path.append(Path(__file__).absolute().parent / 'database')
+        import database.main
+        print(f'Hydrating with seed folder: {seed}')
+        database.main.hydrate_database(seed=seed)
 
     return app

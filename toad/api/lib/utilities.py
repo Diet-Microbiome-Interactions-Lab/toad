@@ -1,6 +1,8 @@
 '''
 Utilities to support the API connection
 '''
+import datetime
+import json
 import traceback
 from typing import Any
 
@@ -12,7 +14,21 @@ from pydantic import BaseModel, ValidationError
 
 from toad import mongo
 from toad.api.lib import dn_exceptions as dexp
+from toad.lib.models import User, UserPublicInfo
 
+class DaneJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        try:
+            return obj.to_bson()
+        except AttributeError:
+            pass
+
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        if hasattr(obj, '__str__'):  # This will handle ObjectIds
+            return str(obj)
+
+        return super(DaneJsonEncoder, self).default(obj)
 
 def parse_qstring(args: dict, model: BaseModel):
     filter_ = {}
@@ -112,7 +128,7 @@ def insert_to_mongo_collection(entry: BaseModel, db_mongo_collection_name: str, 
         # filters aren't currently provided by the client? so this error wouldn't make sense to them
         # return ({'success': False, 'reason': f'Invalid test attribute: {e}'}, 409, {'ContentType': 'application/json'})
 
-    found_matching_entries = len(
+    found_matching_entries = l1en(
         list(collection.find({"$or": field_filters}))) != 0
 
     if not found_matching_entries:
@@ -125,6 +141,16 @@ def insert_to_mongo_collection(entry: BaseModel, db_mongo_collection_name: str, 
                 f'Unexpected issue: {db_mongo_collection_name}: {e}')
     else:
         raise dexp.DBInsertException('Invalid Duplicate item')
+
+
+class UserNotFound(Exception):
+    pass
+
+def user_for_id(dbeUUID: str) -> UserPublicInfo | None:
+    document = User.get_collection().find_one({'dbeUUID': dbeUUID})
+    if not document:
+        raise UserNotFound(dbeUUID)
+    return UserPublicInfo(**document)
 
 
 def register_api(bp: Blueprint, views: MethodView, model: BaseModel, endpoint: str, url: str, pk: str = 'id'):

@@ -1,0 +1,48 @@
+[
+    {
+        "mongodb_collection": "Fastas",
+        "type_": "Fasta",
+        "email": "ddeemer@purdue.edu",
+        "handle": "wintermute",
+        "password": "$2b$12$3L00AKxgYcJb8mfMdEdTn.6tGhV/jw4hDUEDarM.Thd74jt/7/FE.",
+        "dbeUUID": "7cdf58fa-9fcb-469c-8363-d205748d88b8",
+        "first_name": "dane",
+        "last_name": "deemer",
+        "default_config": "0001",
+        "profile_pic": "Placeholder.jpg",
+        "configuration": {
+            "mongodb_collection": "Configurations",
+            "type_": "Configuration",
+            "db_address": "localhost",
+            "port": 27017,
+            "db": "Toad-Default",
+            "uri": "mongodb://localhost:27017/Toad-Default",
+            "source": "microbiome",
+            "lab": "lindemann",
+            "project": "default"
+        }
+    },
+    {
+        "mongodb_collection": "Fastas",
+        "type_": "Fasta",
+        "email": "lindems@purdue.edu",
+        "handle": "StevesHandle",
+        "password": "$2b$12$3L00AKxgYcJb8mfMdEdTn.6tGhV/jw4hDUEDarM.Thd74jt/7/FE.",
+        "dbeUUID": "cba10396-9fb0-43a2-9c0d-9cbe0c60ba5e",
+        "first_name": "stephen",
+        "last_name": "lindemann",
+        "default_config": "0002",
+        "profile_pic": "Placeholder.jpg",
+        "configuration": {
+            "mongodb_collection": "Configurations",
+            "type_": "Configuration",
+            "db_address": "localhost",
+            "port": 27017,
+            "db": "Toad-Default",
+            "uri": "mongodb://localhost:27017/Toad-Default",
+            "source": "microbiome",
+            "lab": "lindemann",
+            "project": "default"
+        }
+    }
+]

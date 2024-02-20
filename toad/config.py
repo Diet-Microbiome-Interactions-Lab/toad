@@ -3,7 +3,7 @@ from logging.config import dictConfig
 
 class Config:
     SECRET_KEY = "4d20dbbc7accf4a6d71a90eaa910f7e4"  # TODO CHANGE
-    MONGO_URI = "mongodb://localhost:27017/Toad-Test"  # TODO CHANGE
+    MONGO_URI = "mongodb://localhost:27017/Toad-Default"  # TODO CHANGE
     MONGO2_DBNAME = 'Gatekeeper-Test'
     UPLOAD_FOLDER = 'uploads'
     TMP = 'tmp'
