@@ -18,8 +18,10 @@ class Toad(clix.App):
         "report.form": "prose"
     }
 
-    def __init__(self, run_mode='cli', comargs=sys.argv[1:]):
-        clix.App.__init__(self, "toad", run_mode=run_mode, comargs=comargs)
+    def __init__(self, run_mode="cli", comargs=sys.argv[1:], qparams=None, mode='debug', user_id=None):
+        print(f'Initializing app.')
+        clix.App.__init__(self, name="toad", mode='debug',
+                          run_mode=run_mode, comargs=comargs, user_id=user_id)
 
     def _get_configuration_folders(self):
         return [os.path.expanduser('~/.config/toad')]  # Talking point
@@ -85,7 +87,6 @@ class Toad(clix.App):
             k, v = value[0], value[1]
             filter_args[k] = v
         print(f'filter_args={filter_args}')
-        # print(f'Vomitting:\n{self.conf.show()}')
         print(filter_args)
         mx.MongoQuery(**filter_args)
         self.succeeded(msg="Good job, success")
