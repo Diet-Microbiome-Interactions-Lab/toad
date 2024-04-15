@@ -11,6 +11,7 @@ import os
 import random
 import requests
 import ssl
+import sys
 import time
 
 from pymongo import MongoClient
@@ -108,13 +109,11 @@ def Reader(folder: str, files: list, config, verbose: bool = False) -> 0:
         all_files = files
     print(all_files)
     print(config.show())
-    import sys
-    # for file in glob.glob(f"{folder}/*"):
     for file in all_files:
         print(f'Ingesting {file}...')
         # try to get metadata from them based on config
         _open, type_ = create_file_handle(file)
-        metadata = RandomMetadata()
+        metadata = RandomMetadata()  #TODO: REPLACE THIS
 
         documents = []
         with _open(file) as handle:

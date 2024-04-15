@@ -17,26 +17,34 @@ class Toad(clix.App):
         "report.form": "prose"
     }
 
-    def __init__(self, run_mode="cli", comargs=sys.argv[1:], qparams=None, mode='debug'):
+    def __init__(self, run_mode="cli", comargs=sys.argv[1:], qparams=None, mode='debug', user_id=None):
+        print(f'Initializing the toad class with comargs={comargs} in mode: {run_mode}')
+        self.user_id = user_id
         self.run_mode = run_mode
         self.qparams = qparams
         self.mode = mode
         clix.App.__init__(self, name="toad",
-                          run_mode=run_mode, comargs=comargs)
+                          run_mode=run_mode, comargs=comargs, user_id=user_id)
+        if self.mode == 'debug':
+            print(self.conf.show())
+            print(f'# ~~~~~ End of Toad.__init__ ~~~~~ #\n\n')
 
     def _get_configuration_folders(self):
         return [os.path.expanduser('~/.config/toad')]  # Talking point
 
+    def do_test_base(self, barewords, **kwargs):
+        self.conf.show()
+        self.succeeded(msg="Base test completed!")
+        return 0
+    
+    def do_test_show_fasta(self, barewords, **kwargs):
+        print(f'Testing the show fasta functionality with a small example...')
+        # response = mx.query_fasta(api_prefix=api_p)
+        return self.succeeded(msg="Good job.")
+
     def do_show_config(self, barewords, **kwargs):
         self.conf.show()
         return self.succeeded(msg="Configuration shown.")
-
-    def do_mock_test(self, barewords, **kwargs):
-        target_file = self.conf['job.file']
-        data_folder = self.conf['scan']
-
-        self.succeeded(msg="Good job for making the mock work!", dex=[1, 2, 3])
-        return 0
 
     def do_ingest_reads(self, barewords, **kwargs):
         # python toad_test.py ingest reads scan: ../toad/tests/ collection: fastq_tests
@@ -49,7 +57,14 @@ class Toad(clix.App):
         return 0
 
     def do_show_fasta(self, barewords, **kwargs):
+        print(f'Lets show them a fast file!')
+        print(f'self.conf')
         api_prefix = self.conf.get('api_prefix')
+        print(f'API PREFIX={api_prefix}')
+        try:
+            print(f'In show fasta with API prefix...{api_prefix}')
+        except Exception as e:
+            print(f'Error in getting')
         response = mx.query_fasta(api_prefix=api_prefix, qparams=self.qparams)
         self.succeeded(
             msg="Test to grab 1 fasta file from the API call", dex=response)
@@ -60,7 +75,8 @@ class Toad(clix.App):
         files = self.conf.get('files', [])
         if self.mode == 'debug':
             print(f'Going into mx.Reader')
-        mx.Reader(scan, files, self.conf)
+        print(f'Ingesting contigs with scan={scan} and files={files}')
+        mx.Reader(folder=scan, files=files, config=self.conf)
         self.succeeded(msg="Fasta job succeeded.")
 
     def do_vomit_reads(self, barewords, **kwargs):

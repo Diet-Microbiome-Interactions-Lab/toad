@@ -7,7 +7,7 @@ from flask import Blueprint, request
 from toad import bcrypt, mongo
 from toad.api.lib.api_classes import DefaultAPI
 from toad.api.lib.utilities import DaneJsonEncoder, register_api, user_for_id
-from toad.lib.models import User, UserSession
+from toad.lib.models import User, UserConfigUpdate, UserSession
 from .. import _API_PATH_PREFIX
 
 
@@ -30,6 +30,22 @@ def sessionid_for_user(user_dbeUUID: str, createSessionIfNone = False) -> str | 
     
     return session['dbeUUID']
 
+
+@api_user.route('/config/', methods=['GET', 'POST', 'PUT'])
+def config():
+    print(f'All good!')
+    data = request.get_json(force=True)
+    if mongo.db.Users.find_one({'dbeUUID': data.get('user')}):
+        myModel = UserConfigUpdate(**data)
+        update_fields = myModel.model_dump()
+        try:
+            update_doc = {f'configuration.{key}': value for key, value in update_fields.items()}
+            print(f'Setting:\n{update_doc}\n')
+            mongo.db.Users.update_one({'dbeUUID': data.get('user')}, {'$set': update_doc})
+            return (json.dumps({"Status": "Successfully Updated User"}), 200, {'ContentType': 'application/json'})
+        except Exception as e:
+            (json.dumps({"Status": "Fail", "Error": f'{e}'}), 200, {'ContentType': 'application/json'})
+    return (json.dumps({"Status": "User not found (check valid dbeUUID in request.get(user))"}), 200, {'ContentType': 'application/json'})
 
 @api_user.route('/login-user/', methods=['POST'])
 def login_user():

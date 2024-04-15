@@ -17,9 +17,14 @@
             "port": 27017,
             "db": "Toad-Default",
             "uri": "mongodb://localhost:27017/Toad-Default",
-            "source": "microbiome",
+            "source": "gut microbiome",
             "lab": "lindemann",
-            "project": "default"
+            "project": "default",
+            "projects": [
+                "default",
+                "nigms",
+                "olipop"
+            ]
         }
     },
     {
@@ -40,9 +45,14 @@
             "port": 27017,
             "db": "Toad-Default",
             "uri": "mongodb://localhost:27017/Toad-Default",
-            "source": "microbiome",
+            "source": "gut microbiome",
             "lab": "lindemann",
-            "project": "default"
+            "project": "default",
+            "projects": [
+                "default",
+                "nigms",
+                "olipop"
+            ]
         }
     }
 ]

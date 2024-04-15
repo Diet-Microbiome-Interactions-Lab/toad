@@ -3,7 +3,7 @@ Base models. Will eventually spread these out
 '''
 
 from datetime import datetime
-from typing import Any, Annotated, Union
+from typing import Any, Annotated, Optional, Union
 import uuid
 
 from bson import CodecOptions, ObjectId
@@ -41,8 +41,8 @@ class CoreModel(BaseModel):
     version_: str = '0.1.1-Tadpole'
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def to_bson(self):
-        data = self.dict(by_alias=True, exclude_none=True)
+    def to_bson(self, exclude_fields=[]):
+        data = self.model_dump(by_alias=True, exclude_none=True)
         # data['_id'] = data['hash_']
         return data
 
@@ -85,6 +85,7 @@ class UserPublicInfo(CoreModel):
     # photo: str
     first_name: str
     last_name: str
+    configuration: dict
 
 class User(CoreModel):
     mongodb_collection: str = "Users"
@@ -98,6 +99,11 @@ class User(CoreModel):
     profile_pic: str
     configuration: dict
 
+
+class UserConfigUpdate(BaseModel):
+    lab: Optional[str] = None
+    source: Optional[str] = None
+    project: Optional[str] = None
 
 class Configuration(CoreModel):
     mongodb_collection: str = "Configurations"
